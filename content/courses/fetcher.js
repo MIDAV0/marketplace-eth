@@ -1,5 +1,5 @@
 
-import courses from './courses.json';
+import courses from './index.json';
 
 export const getAllCourses = () => {
     return {

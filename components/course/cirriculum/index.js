@@ -8,7 +8,11 @@ const lectures = [
 ]
 
 
-export default function Cirriculum(){
+
+export default function Cirriculum({locked}){
+
+    const statusForLocked = "px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+
     return(
         <section className="max-w-5xl mx-auto">
         <div className="flex flex-col">
@@ -42,12 +46,18 @@ export default function Cirriculum(){
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            Unlocked
+                          <span 
+                            className={
+                              locked ?
+                                `bg-red-100 text-red-800 ${statusForLocked}` :
+                                `bg-green-100 text-green-800 ${statusForLocked}`}>
+                            { locked ? "Locked" : "Unlocked"}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <a href="#" className="text-indigo-600 hover:text-indigo-900">Play</a>
+                          <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                            { locked ? "Get Access" : "Play"}
+                          </a>
                         </td>
                       </tr>
                     )}
