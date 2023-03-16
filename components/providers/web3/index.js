@@ -48,11 +48,11 @@ export default function Web3Provider({ children }){
                     try {
                         await web3Api.provider.request({ method: 'eth_requestAccounts' })
                     } catch {
-                        console.error("Connot connect")
+                        console.error("Cannot connect")
                         window.location.reload()
                     }
                 } :
-                () => console.error("Connot reload")
+                () => console.error("Cannot reload")
         }
     }, [web3Api])
 

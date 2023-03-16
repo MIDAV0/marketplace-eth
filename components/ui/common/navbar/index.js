@@ -5,6 +5,7 @@ import { Button } from '@components/ui/common'
 export default function Navbar(){
     const { connect, isLoading, isWeb3Loaded } = useWeb3()
 
+
     return (
         <section>
             <div className="relative pt-6 px-4 sm:px-6 lg:px-8">
