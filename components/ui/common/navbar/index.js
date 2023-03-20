@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import { useWeb3 } from '@components/providers'
 import { Button } from '@components/ui/common'
+import { useAccount } from '@components/web3/hooks/useAccount'
 
 export default function Navbar(){
     const { connect, isLoading, isWeb3Loaded, hooks} = useWeb3()
-    const { account } = hooks.useAccount()
+    const { account } = useAccount()
 
 
     return (
@@ -26,12 +27,21 @@ export default function Navbar(){
                                 onClick={connect} 
                             >
                                 Loading...
-                            </Button> : isWeb3Loaded ?
-                            <Button
-                            onClick={connect}
-                            >
-                                Connect Wallet
-                            </Button> :
+                            </Button> : 
+                            isWeb3Loaded ?
+                                account ?
+                                    <Button className='cursor-default' hoverable={false}>
+                                        {
+                                            account.slice(0, 6) + '...' + account.slice(-4)
+                                        }
+                                    </Button> 
+                                    :
+                                    <Button
+                                        onClick={connect}
+                                    >
+                                        Connect Wallet
+                                    </Button>
+                                :
                             <Button
                                 onClick={() => window.open('https://metamask.io/', "_blank")}
                             >
