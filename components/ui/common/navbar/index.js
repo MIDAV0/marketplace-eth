@@ -29,10 +29,10 @@ export default function Navbar(){
                                 Loading...
                             </Button> : 
                             isWeb3Loaded ?
-                                account ?
+                                account.data ?
                                     <Button className='cursor-default' hoverable={false}>
                                         {
-                                            account.slice(0, 6) + '...' + account.slice(-4)
+                                            account.data.slice(0, 6) + '...' + account.data.slice(-4)
                                         }
                                     </Button> 
                                     :
