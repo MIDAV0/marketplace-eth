@@ -16,9 +16,14 @@ export default function Marketplace({ courses }) {
             <div className="py-4">
                 <WalletBar 
                     address={account.data}
-                    network={network.data}
+                    network={{
+                      data: network.data,
+                      target: network.targetNetwork,
+                      isSupported: network.isSupported
+                    }}
                     /> 
             </div>
+
 
             <List 
               courses={courses}
