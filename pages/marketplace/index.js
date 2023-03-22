@@ -10,6 +10,7 @@ import { useNetwork } from "@components/hooks/web3/useNetwork"
 export default function Marketplace({ courses }) {
     const { account } = useAccount()
     const { network } = useNetwork()
+    console.log(network)
   
     return (
             <>
