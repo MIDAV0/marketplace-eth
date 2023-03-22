@@ -1,15 +1,21 @@
 
 import { Hero } from "@components/ui/common"
 import { BaseLayout } from "@components/ui/layout"
-import { Card } from "@components/ui/order"
+import { List } from "@components/ui/course"
 import { getAllCourses } from "@content/courses/fetcher"
+import { CourseCard } from "@components/ui/course"
 
 export default function Home({ courses }) {
   
   return (
         <>
           <Hero />
-          <Card courses={courses}/>
+          <List 
+              courses={courses}
+            >
+            {(course) => <CourseCard key={course.id} course={course}/>}
+            </List>
+
         </>
   )
 }

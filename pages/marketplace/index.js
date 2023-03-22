@@ -1,7 +1,6 @@
 
-import { Hero } from "@components/ui/common"
 import { BaseLayout } from "@components/ui/layout"
-import { Card } from "@components/ui/order"
+import { CourseCard, List } from "@components/ui/course"
 import { getAllCourses } from "@content/courses/fetcher"
 import { WalletBar } from "@components/ui/web3"
 import { useAccount } from "@components/hooks/web3/useAccount"
@@ -13,7 +12,7 @@ export default function Marketplace({ courses }) {
     console.log(network)
   
     return (
-            <>
+          <>
             <div className="py-4">
                 <WalletBar 
                     address={account.data}
@@ -21,8 +20,12 @@ export default function Marketplace({ courses }) {
                     /> 
             </div>
 
-            <Card courses={courses}/>
-            </>
+            <List 
+              courses={courses}
+            >
+            {(course) => <CourseCard key={course.id} course={course}/>}
+            </List>
+          </>
     )
 }
 
