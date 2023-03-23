@@ -9,6 +9,7 @@ export default function Button({children,
     const variants = {
         purple: `mr-8 text-white bg-purple-600 ${hoverable && "hover:bg-indigo-700"}`,
         red: `mr-8 text-white bg-red-600 ${hoverable && "hover:bg-red-700"}`,
+        lightBlue: `text-indigo-100 bg-indigo-000 ${hoverable && "hover:bg-indigo-200"}`,
     }
 
     return (
