@@ -34,12 +34,10 @@ export const handler = (web3, provider) => () => {
     }, [web3])
     
     return {
-        network: {
             data,
             mutate,
             targetNetwork: targetNetwork,
             isSupported: data == targetNetwork,
             ...rest
-        }
     }
 } 

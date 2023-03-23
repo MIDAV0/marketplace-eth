@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { useWeb3 } from '@components/providers'
 import { Button } from '@components/ui/common'
-import { useAccount } from '@components/hooks/web3/useAccount'
+import { useAccount } from '@components/hooks/web3'
 import { useRouter } from 'next/router'
 
 export default function Navbar(){
-    const { connect, isLoading, isWeb3Loaded, hooks} = useWeb3()
+    const { connect, isLoading, requireInstall } = useWeb3()
     const { account } = useAccount()
     const { pathname } = useRouter()
 
@@ -30,7 +30,6 @@ export default function Navbar(){
                             >
                                 Loading...
                             </Button> : 
-                            isWeb3Loaded ?
                                 account.data ?
                                     <Button className='cursor-default' hoverable={false}>
                                         {
@@ -38,17 +37,18 @@ export default function Navbar(){
                                         }
                                     </Button> 
                                     :
+                                    !requireInstall ?
                                     <Button
                                         onClick={connect}
                                     >
                                         Connect Wallet
                                     </Button>
-                                :
-                            <Button
-                                onClick={() => window.open('https://metamask.io/', "_blank")}
-                            >
-                                Install MetaMask
-                            </Button>
+                                    :
+                                    <Button
+                                        onClick={() => window.open('https://metamask.io/', "_blank")}
+                                    >
+                                        Install MetaMask
+                                    </Button>
                     }
                 </div>
                 </div>
