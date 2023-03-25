@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { ActiveLink } from '@components/ui/common'
 import { useWeb3 } from '@components/providers'
 import { Button } from '@components/ui/common'
 import { useAccount } from '@components/hooks/web3'
@@ -7,7 +7,6 @@ import { useRouter } from 'next/router'
 export default function Navbar(){
     const { connect, isLoading, requireInstall } = useWeb3()
     const { account } = useAccount()
-    const { pathname } = useRouter()
 
  
     return (
@@ -16,12 +15,28 @@ export default function Navbar(){
             <nav className="relative" aria-label="Global">
                 <div className="flex justify-between items-center">
                 <div>
-                    <Link href="/" className="font-medium mr-8 text-gray-500 hover:text-gray-900">Home</Link>
-                    <Link href="/marketplace" className="font-medium mr-8 text-gray-500 hover:text-gray-900">Marketplace</Link>
-                    <Link href="/" className="font-medium mr-8 text-gray-500 hover:text-gray-900">Blogs</Link>
+                    <ActiveLink href="/" >
+                        <span className="font-medium mr-8 text-gray-500 hover:text-gray-900">
+                            Home
+                        </span>
+                    </ActiveLink>
+                    <ActiveLink href="/marketplace">
+                        <span className="font-medium mr-8 text-gray-500 hover:text-gray-900">
+                            Marketplace
+                        </span>
+                    </ActiveLink>
+                    <ActiveLink href="/blogs">
+                        <span className="font-medium mr-8 text-gray-500 hover:text-gray-900">
+                            Blogs
+                        </span>
+                    </ActiveLink>
                 </div>
                 <div>
-                    <Link href="/" className="font-medium mr-8 text-indigo-600 hover:text-indigo-500">Whislist</Link>
+                    <ActiveLink href="/whishlists">
+                        <span className="font-medium mr-8 text-indigo-600 hover:text-indigo-500">
+                            Whishlist
+                        </span>
+                    </ActiveLink>
                     {
                         isLoading ?
                             <Button

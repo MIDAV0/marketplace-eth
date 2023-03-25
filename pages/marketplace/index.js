@@ -2,52 +2,42 @@
 import { BaseLayout } from "@components/ui/layout"
 import { CourseCard, List } from "@components/ui/course"
 import { getAllCourses } from "@content/courses/fetcher"
-import { EthRates, WalletBar } from "@components/ui/web3"
-import { useAccount, useNetwork, useWalletInfo } from "@components/hooks/web3"
+import { useWalletInfo } from "@components/hooks/web3"
 import { Button } from "@components/ui/common"
 import { OrderModal } from "@components/ui/order"
 import { useState } from "react"
-import { useEthPrice } from "@components/hooks/useEthPrice"
+import { MarketHeader } from "@components/ui/marketplace"
 
 export default function Marketplace({ courses }) {
     const [selectedCourse, setSelectedCourse] = useState(null)
 
-    const {account, network, canPurchaseCourse} = useWalletInfo()
-    const { eth } = useEthPrice()
+    const {canPurchaseCourse} = useWalletInfo()
   
     return (
           <>
             <div className="py-4">
-                <WalletBar 
-                    address={account.data}
-                    network={{
-                      data: network.data,
-                      target: network.targetNetwork,
-                      isSupported: network.isSupported
-                    }}
-                    /> 
-                    <EthRates ethPrice={eth.data} coursePrice={eth.coursePrice}/>
+              <MarketHeader />
             </div>
-
 
             <List 
               courses={courses}
             >
-            {(course) => <CourseCard 
-              key={course.id} 
-              course={course} 
-              disabled={!canPurchaseCourse}
-              Footer={() => 
-                <div className="mt-4">
-                  <Button 
-                    disabled={!canPurchaseCourse}
-                    variant="lightBlue"
-                    onClick={() => setSelectedCourse(course)}
-                    >
-                    Purchase
-                  </Button>
-                </div>
-              }
+              {(course) => 
+                <CourseCard 
+                  key={course.id} 
+                  course={course} 
+                  disabled={!canPurchaseCourse}
+                  Footer={() => 
+                    <div className="mt-4">
+                      <Button 
+                        disabled={!canPurchaseCourse}
+                        variant="lightBlue"
+                        onClick={() => setSelectedCourse(course)}
+                        >
+                        Purchase
+                      </Button>
+                    </div>
+                  }
                 />}
             </List>
             { selectedCourse &&
