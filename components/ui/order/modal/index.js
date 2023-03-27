@@ -10,10 +10,32 @@ const defaultOrder = {
   confirmationEmail: ""
 }
 
+const _createFormState = (isDisabled=false, message="") => ({isDisabled, message})
 
-export default function OrderModal({ course, onClose, ethPrice }) {
+const createFormState = ({price, email, confirmationEmail}, hasAgreedTOS) => {
+  if (!price || Number(price)<=0){
+    return _createFormState(true, "Price must be greater than 0")
+  }
+  else if (confirmationEmail.length === 0 || email.length === 0){
+    return _createFormState(true)
+  }
+  else if (confirmationEmail !== email){
+    return _createFormState(true, "Emails must match")
+  }
+
+  else if (!hasAgreedTOS){
+    return _createFormState(true, "You must agree to the terms of service to continue")
+  }
+
+  return _createFormState()
+}
+
+
+export default function OrderModal({ course, onClose, onSubmit }) {
     const [isOpen, setIsOpen] = useState(false)
     const [order, setOrder] = useState(defaultOrder)
+    const [enabledPrice, setEnabledPrice] = useState(false)
+    const [hasAgreedTOS, setHasAgreedTOS] = useState(false)
     const { eth } = useEthPrice()
 
     useEffect(() => {
@@ -29,8 +51,12 @@ export default function OrderModal({ course, onClose, ethPrice }) {
     const closeModal = () => {
         setIsOpen(false)
         setOrder(defaultOrder)
+        setEnabledPrice(false)
+        setHasAgreedTOS(false)
         onClose()
     }
+
+    const formState = createFormState(order, hasAgreedTOS)
 
 
     return (
@@ -38,7 +64,7 @@ export default function OrderModal({ course, onClose, ethPrice }) {
         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="sm:flex sm:items-start">
-              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <div className="mt-3 sm:mt-0 sm:ml-4 sm:text-left">
                 <h3 className="mb-7 text-lg font-bold leading-6 text-gray-900" id="modal-title">
                     {course.title}
                 </h3>
@@ -48,6 +74,15 @@ export default function OrderModal({ course, onClose, ethPrice }) {
                     <div className="text-xs text-gray-700 flex">
                       <label className="flex items-center mr-2">
                         <input
+                          checked={enabledPrice}
+                          onChange={(event) => {
+                            const checked = event.target.checked
+                            setOrder({
+                              ...order,
+                              price: checked ? order.price : eth.coursePrice
+                            })
+                            setEnabledPrice(checked)
+                          }}
                           type="checkbox"
                           className="form-checkbox"
                         />
@@ -56,6 +91,7 @@ export default function OrderModal({ course, onClose, ethPrice }) {
                     </div>
                   </div>
                   <input
+                    disabled={!enabledPrice}
                     value={order.price}
                     onChange={(event) => {
                       const value = event.target.value
@@ -79,6 +115,13 @@ export default function OrderModal({ course, onClose, ethPrice }) {
                     <label className="mb-2 font-bold">Email</label>
                   </div>
                   <input
+                    onChange={(event) => {
+                      const value = event.target.value
+                      setOrder({
+                        ...order,
+                        email: value.trim()
+                      })
+                    }}
                     type="email"
                     name="email"
                     id="email"
@@ -94,6 +137,13 @@ export default function OrderModal({ course, onClose, ethPrice }) {
                     <label className="mb-2 font-bold">Repeat Email</label>
                   </div>
                   <input
+                    onChange={(event) => {
+                      const value = event.target.value
+                      setOrder({
+                        ...order,
+                        confirmationEmail: value.trim()
+                      })
+                    }}
                     type="email"
                     name="confirmationEmail"
                     id="confirmationEmail"
@@ -102,16 +152,31 @@ export default function OrderModal({ course, onClose, ethPrice }) {
                 <div className="text-xs text-gray-700 flex">
                   <label className="flex items-center mr-2">
                     <input
+                      checked={hasAgreedTOS}
+                      onChange={(event) => {
+                        const checked = event.target.checked
+                        setHasAgreedTOS(checked)
+                      }}
                       type="checkbox"
                       className="form-checkbox" />
                   </label>
                   <span>I accept Eincode &apos;terms of service&apos; and I agree that my order can be rejected in the case data provided above are not correct</span>
                 </div>
+                {formState.message && 
+                  <div className="p-4 my-3 text-red-700 bg-red-200 rounded-lg text-sm">
+                    {formState.message}
+                  </div>
+                }
               </div>
             </div>
           </div>
           <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex">
-            <Button>
+            <Button
+              disabled={formState.isDisabled}
+              onClick={() => {
+                onSubmit(order)
+              }}
+            >
               Submit
             </Button>
             <Button
