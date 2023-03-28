@@ -32,6 +32,11 @@ contract CourseMarketplace {
     /// Course already has an owner!
     error CourseHasOwner();
 
+    modifier onlyOwner() {
+        require(msg.sender == getContractOwner());
+        _;
+    }
+
     function purchaseCourse(
         bytes16 courseId,
         bytes32 proof
@@ -52,6 +57,10 @@ contract CourseMarketplace {
         });
     }
 
+    function transferOwnership(address newOwner) external onlyOwner {
+        setContractOwner(newOwner);
+    }
+
     function getCourseCount() external view returns(uint) {
         return totalOwnedCourses;
     }
@@ -63,6 +72,10 @@ contract CourseMarketplace {
     function getCourseByHash(bytes32 courseHash) external view returns(Course memory){
         return ownedCourses[courseHash];
     } 
+
+    function getContractOwner() public view returns(address) {
+        return owner;
+    }
 
     function setContractOwner(address newOwner) private {
         owner = payable(newOwner);
