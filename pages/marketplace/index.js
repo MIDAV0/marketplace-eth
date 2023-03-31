@@ -7,14 +7,15 @@ import { Button } from "@components/ui/common"
 import { OrderModal } from "@components/ui/order"
 import { useState } from "react"
 import { MarketHeader } from "@components/ui/marketplace"
+import { useWeb3 } from "@components/providers"
 
 export default function Marketplace({ courses }) {
+    const { web3 } = useWeb3()
     const [selectedCourse, setSelectedCourse] = useState(null)
+    const {canPurchaseCourse, account} = useWalletInfo()
 
-    const {canPurchaseCourse} = useWalletInfo()
-
-    const purchaseCourse = (order) => {
-      alert(JSON.stringify(order))
+    const purchaseCourse = order => {
+      
     }
   
     return (
