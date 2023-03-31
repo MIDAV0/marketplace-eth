@@ -8,6 +8,7 @@ import { loadContract } from '@utils/loadContract';
 
 const Web3Context = createContext(null);
 
+
 export default function Web3Provider({ children }){
     const [web3Api, setWeb3Api] = useState(
         {
@@ -15,7 +16,7 @@ export default function Web3Provider({ children }){
             web3: null,
             contract: null,
             isLoading: true,
-            hooks: setupHooks(),
+            hooks: setupHooks({provider: null, web3: null, contract: null}),
         }
     )
 
@@ -30,7 +31,7 @@ export default function Web3Provider({ children }){
                     web3,
                     contract,
                     isLoading: false,
-                    hooks: setupHooks(web3, provider),
+                    hooks: setupHooks({web3, provider, contract}),
                 })
             } else {
                 setWeb3Api(api => ({

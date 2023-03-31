@@ -10,12 +10,35 @@ import { MarketHeader } from "@components/ui/marketplace"
 import { useWeb3 } from "@components/providers"
 
 export default function Marketplace({ courses }) {
-    const { web3 } = useWeb3()
+    const { web3, contract } = useWeb3()
     const [selectedCourse, setSelectedCourse] = useState(null)
     const {canPurchaseCourse, account} = useWalletInfo()
 
-    const purchaseCourse = order => {
-      
+    const purchaseCourse = async order => {
+      const hexCourseId = web3.utils.utf8ToHex(selectedCourse.id)
+
+      const orderHash = web3.utils.soliditySha3(
+        { type: "bytes16", value: hexCourseId },
+        { type: "address", value: account.data },
+      )
+
+      const emailHash = web3.utils.sha3(order.email)
+
+      const proof = web3.utils.soliditySha3(
+        { type: "bytes32", value: emailHash },
+        { type: "bytes32", value: orderHash },
+      )
+
+      const price = web3.utils.toWei(String(order.price))
+
+      try {
+        await contract.methods.purchaseCourse(
+          hexCourseId,
+          proof
+        ).send({from: account.data, value: price})
+      } catch {
+        console.log("Purchase failed")
+      }
     }
   
     return (
