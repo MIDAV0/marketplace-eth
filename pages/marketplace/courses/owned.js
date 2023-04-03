@@ -4,8 +4,10 @@ import { OwnedCourseCard } from "@components/ui/course";
 import { Button, Message } from "@components/ui/common";
 import { useAccount, useOwnedCourses } from "@components/hooks/web3";
 import { getAllCourses } from "@content/courses/fetcher";
+import { useRouter } from "next/router";
 
 export default function OwnedCourses({courses}){
+    const router = useRouter()
     const { account } = useAccount()
     const { ownedCourses } = useOwnedCourses(courses, account.data)
     return (
@@ -22,7 +24,7 @@ export default function OwnedCourses({courses}){
                         <Message type="success">
                             My message    
                         </Message>
-                        <Button>
+                        <Button onClick={()=>router.push(`/courses/${course.slug}`)}>
                             Watch the course
                         </Button>
                     </OwnedCourseCard>

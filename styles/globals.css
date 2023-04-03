@@ -8,6 +8,10 @@
     min-height: calc(100vh - 88px);
 }
 
+.next-image-wrapper > div {
+  height: 100%;
+}
+
 .sk-circle {
   width: 30px;
   height: 30px;
