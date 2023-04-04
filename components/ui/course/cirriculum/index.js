@@ -1,3 +1,6 @@
+import { Loader } from "@components/ui/common"
+import Link from "next/link"
+
 const lectures = [
   "How to init App",
   "How to get a help",
@@ -9,7 +12,7 @@ const lectures = [
 
 
 
-export default function Cirriculum({locked}){
+export default function Cirriculum({locked, courseState, isLoading}){
 
     const statusForLocked = "px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
 
@@ -55,9 +58,36 @@ export default function Cirriculum({locked}){
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                            { locked ? "Get Access" : "Play"}
-                          </a>
+                          {
+                            isLoading ?
+                              <Loader />
+                            :
+                            locked ?
+                            <>
+                              {
+                                courseState === "deactivated" &&
+                                <Link href="/marketpace">
+                                  <span className="text-indigo-600 hover:text-indigo-900">
+                                    Get Access
+                                  </span>
+                                </Link>
+                              }
+                              {
+                                courseState === "purchased" &&
+                                <Link href="/faq">
+                                  <span className="text-yellow-500 hover:text-indigo-900">
+                                    Waiting for activation
+                                  </span>
+                                </Link>
+                              }
+                            </>
+                           :
+                            <Link href="#">
+                            <span className="text-indigo-500 hover:text-indigo-900">
+                              Watch
+                            </span>
+                            </Link>
+                          }
                         </td>
                       </tr>
                     )}
