@@ -12,7 +12,7 @@ export default function OwnedCourseCard({children, course}) {
 
     return (
       <div className="bg-white border shadow overflow-hidden sm:rounded-lg mb-3">
-        <div className="flex">
+        <div className="block sm:flex">
           <div className="flex-1">
             <div className="h-72 sm:h-full next-image-wrapper">
               <Image
