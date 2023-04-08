@@ -34,7 +34,7 @@ export const handler = (web3, provider) => () => {
 
 
     useEffect(() => {
-        const mutator = chainId => mutate(NETWORKS[parseInt(netId, 16)])
+        const mutator = netId => mutate(NETWORKS[parseInt(netId, 16)])
         provider?.on('chainChanged', mutator)
 
         return () => {
