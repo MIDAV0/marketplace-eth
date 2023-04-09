@@ -33,7 +33,7 @@ contract CourseMarketplace {
     error CourseHasOwner();
 
     modifier onlyOwner() {
-        require(msg.sender == getContractOwner());
+        require(msg.sender == getContractOwner(), "Only owner of the contract");
         _;
     }
 
