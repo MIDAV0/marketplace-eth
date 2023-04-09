@@ -22,27 +22,30 @@ const VerificationInput = ({onVerify}) => {
                 id="account"
                 className="w-96 focus:ring-indigo-500 shadow-md focus:border-indigo-500 block pl-7 p-4 sm:text-sm border-gray-300 rounded-md"
                 placeholder="0x2341ab..." />
-            <Button 
-                onClick={()=>{
-                   onVerify(email)
-                }}
-            >
-                Verify
-            </Button>
+            
+            <div className="ml-3">
+                <Button 
+                    onClick={()=>{
+                    onVerify(email)
+                    }}
+                >
+                    Verify
+                </Button>
+            </div>    
         </div>
     )
 }
 
 
 export default function ManageCourses(){
-    const { web3 } = useWeb3()
+    const { web3, contract} = useWeb3()
     const [proofedOwner, setProofedOwner] = useState({})
     const { account } = useAdmin({redirectTo: "/marketplace"})
     const { managedCourses } = useManagedCourses(account)
 
     const verifyCourse = (email, {hash, proof}) => {
         const emailHash = web3.utils.sha3(email)
-        const proofToCheck = web3.utils.soliditySha3(
+        const proofToCheck = web3.utils?.soliditySha3(
             {
                 type: "bytes32",
                 value: emailHash
@@ -59,6 +62,14 @@ export default function ManageCourses(){
             setProofedOwner({
                 [hash]: false
             })
+    }
+
+    const activateCourse = async (courseHash) => {
+        try {
+            await contract.methods.activateCourse(courseHash).send({from: account.data})
+        } catch (error) {
+            console.error(error.message)
+        }
     }
 
     if (!account.isAdmin) return null
@@ -93,6 +104,19 @@ export default function ManageCourses(){
                                         Wrong proof!
                                     </Message>
                                 </div>
+                            }
+                            {
+                                course.state === "purchased" &&
+                                    <div className="mt-3">
+                                        <Button
+                                            onClick={() => activateCourse(course.hash)}
+                                        >
+                                            Activate
+                                        </Button>
+                                        <Button>
+                                            Deactivate
+                                        </Button>
+                                    </div>                                
                             }
                         </ManagedCourseCard>
                     )
