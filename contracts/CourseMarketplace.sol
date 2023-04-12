@@ -57,6 +57,16 @@ contract CourseMarketplace {
         });
     }
 
+    function repurchaseCourse(bytes32 courseHash) external payable {
+        require(isCourseCreated(courseHash), "Course is not created");
+        require(hasCourseOwnership(courseHash), "You are not a course owner");
+        Course storage course = ownedCourses[courseHash];
+        require(course.state == State.Deactivated, "Invalid state");
+
+        course.state = State.Purchased;
+        course.price = msg.value;
+    }
+
     function activateCourse(bytes32 courseHash) external onlyOwner {
         require(isCourseCreated(courseHash), "Course is not created");
         Course storage course = ownedCourses[courseHash];
