@@ -84,11 +84,12 @@ export const useWalletInfo = () => {
     const { account } = useAccount()
     const { network } = useNetwork()
 
-    const canPurchaseCourse = !!(account.data && network.isSupported)
+    const isConnecting = !account.hasInitialResponse && !network.hasInitialResponse
 
     return {
         account,
         network,
-        canPurchaseCourse
+        isConnecting,
+        hasConnectedWallet: !!(account.data && network.isSupported)
     }
 }

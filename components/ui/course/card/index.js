@@ -22,7 +22,9 @@ export default function CourseCard({course, Footer, disabled}){
                     </Link>
                     <p className="mt-2 text-sm xs:text-base text-gray-500">{course.description}</p>
                     {   Footer &&
-                        <Footer />
+                        <div className='mt-2'>
+                            <Footer />
+                        </div>
                     }
                 </div>
             </div>
