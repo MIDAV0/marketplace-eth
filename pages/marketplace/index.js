@@ -9,6 +9,7 @@ import { useState } from "react"
 import { MarketHeader } from "@components/ui/marketplace"
 import { useWeb3 } from "@components/providers"
 import { Loader } from "@components/ui/common"
+import { Message } from "@components/ui/common"
 
 
 export default function Marketplace({ courses }) {
@@ -96,12 +97,19 @@ export default function Marketplace({ courses }) {
 
                       if (owned) {
                         return (
-                          <Button 
-                            disabled={true}
-                            variant="lightBlue"
-                            >
-                              Owned
-                          </Button>
+                          <>
+                            <Button 
+                              disabled={true}
+                              variant="lightBlue"
+                              >
+                                Owned
+                            </Button>
+                            <div className="mt-2">
+                              <Message>
+                                  {owned.state.substring(0, 1).toUpperCase() + owned.state.substring(1)}
+                              </Message>
+                            </div>
+                          </>
                         )
                       }
 
