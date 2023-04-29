@@ -2,7 +2,7 @@ import { BaseLayout } from "@components/ui/layout";
 import { MarketHeader } from "@components/ui/marketplace";
 import { OwnedCourseCard } from "@components/ui/course";
 import { Button, Message } from "@components/ui/common";
-import { useAccount, useOwnedCourses } from "@components/hooks/web3";
+import { useOwnedCourses, useWalletInfo } from "@components/hooks/web3";
 import { getAllCourses } from "@content/courses/fetcher";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -11,8 +11,8 @@ import { useWeb3 } from "@components/providers/web3";
 export default function OwnedCourses({courses}){
     const { requireInstall } = useWeb3()
     const router = useRouter()
-    const { account } = useAccount()
-    const { ownedCourses } = useOwnedCourses(courses, account.data)
+    const { account, network } = useWalletInfo()
+    const { ownedCourses } = useOwnedCourses(courses, account.data, network.data)
     console.log(ownedCourses)
     return (
         <>

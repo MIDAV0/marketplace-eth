@@ -9,14 +9,15 @@ import { useState } from "react"
 import { MarketHeader } from "@components/ui/marketplace"
 import { useWeb3 } from "@components/providers"
 import { Loader } from "@components/ui/common"
-import { Message } from "@components/ui/common"
 
 
 export default function Marketplace({ courses }) {
     const { web3, contract, requireInstall } = useWeb3()
     const [selectedCourse, setSelectedCourse] = useState(null)
-    const {hasConnectedWallet, account, isConnecting} = useWalletInfo()
-    const { ownedCourses } = useOwnedCourses(courses, account.data)
+    const [isNewPurchase, setNewPurchase] = useState(true)
+
+    const {hasConnectedWallet, account, isConnecting, network} = useWalletInfo()
+    const { ownedCourses } = useOwnedCourses(courses, account.data, network.data)
 
     const purchaseCourse = async order => {
       const hexCourseId = web3.utils.utf8ToHex(selectedCourse.id)
@@ -26,25 +27,42 @@ export default function Marketplace({ courses }) {
         { type: "address", value: account.data },
       )
 
-      const emailHash = web3.utils.sha3(order.email)
-
-      const proof = web3.utils.soliditySha3(
-        { type: "bytes32", value: emailHash },
-        { type: "bytes32", value: orderHash },
-      )
-
       const price = web3.utils.toWei(String(order.price))
 
+      if (isNewPurchase) {
+        const emailHash = web3.utils.sha3(order.email)
+        const proof = web3.utils.soliditySha3(
+          { type: "bytes32", value: emailHash },
+          { type: "bytes32", value: orderHash },
+        )
+        
+        await _purchaseCourse(hexCourseId, proof, price)
+      } else {
+        await _repurchaseCourse(orderHash, price)
+      }
+    }
+
+    const _purchaseCourse = async (hexCourseId, proof, value) => {
       try {
         await contract.methods.purchaseCourse(
           hexCourseId,
           proof
-        ).send({from: account.data, value: price})
+        ).send({from: account.data, value})
       } catch {
         console.log("Purchase failed")
       }
     }
-  
+
+    const _repurchaseCourse = async (courseHash, value) => {
+      try {
+        await contract.methods.repurchaseCourse(
+          courseHash
+        ).send({from: account.data, value})
+      } catch {
+        console.log("Repurchase failed")
+      }
+    }
+
     return (
           <>
             <div className="py-4">
@@ -54,10 +72,14 @@ export default function Marketplace({ courses }) {
             <List 
               courses={courses}
             >
-              {(course) => 
+              {(course) => {
+                const owned = ownedCourses.lookup[course.id]
+
+                return (
                 <CourseCard 
                   key={course.id} 
                   course={course} 
+                  state={owned?.state}
                   disabled={!hasConnectedWallet}
                   Footer={() => {
                       if (requireInstall) {
@@ -93,21 +115,28 @@ export default function Marketplace({ courses }) {
                         )
                       }
 
-                      const owned = ownedCourses.lookup[course.id]
-
                       if (owned) {
                         return (
                           <>
-                            <Button 
-                              disabled={true}
-                              variant="lightBlue"
-                              >
-                                Owned
-                            </Button>
-                            <div className="mt-2">
-                              <Message>
-                                  {owned.state.substring(0, 1).toUpperCase() + owned.state.substring(1)}
-                              </Message>
+                            <div>
+                              <Button 
+                                disabled={true}
+                                variant="lightBlue"
+                                >
+                                  Owned
+                              </Button>
+                              { owned.state === "deactivated" && 
+                                <Button 
+                                  disabled={false}
+                                  variant="lightBlue"
+                                  onClick={() => {
+                                      setNewPurchase(false)
+                                      setSelectedCourse(course)
+                                    }}
+                                  >
+                                    Fund to Activate
+                                </Button>                              
+                              }
                             </div>
                           </>
                         )
@@ -125,13 +154,18 @@ export default function Marketplace({ courses }) {
                     }
                   }
                 />
+                )}
               }
             </List>
             { selectedCourse &&
               <OrderModal 
                 course={selectedCourse} 
+                isNewPurchase={isNewPurchase}
                 onSubmit={purchaseCourse}
-                onClose={() => setSelectedCourse(null)}
+                onClose={() => {
+                  setSelectedCourse(null)
+                  setNewPurchase(true)
+                }}
                 />
             }
           </>
