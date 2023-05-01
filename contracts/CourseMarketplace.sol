@@ -25,8 +25,11 @@ contract CourseMarketplace {
 
     address payable private owner;
 
+    bool isStopped;
+
     constructor() {
         setContractOwner(msg.sender);
+        isStopped = false;
     }
 
     /// Course already has an owner!
@@ -37,10 +40,42 @@ contract CourseMarketplace {
         _;
     }
 
+    modifier isActive() {
+        require(!isStopped, "Contract is stopped at the moment");
+        _;
+    }
+
+    modifier isNotActive(){
+        require(isStopped, "Contract is not stopped");
+        _;
+    }
+
+    receive() external payable {}
+
+    function withdraw(uint amount) external onlyOwner {
+        require(amount <= address(this).balance, "Insufficient balance");
+        (bool success, ) = owner.call{value: amount}("");
+        require(success, "Transfer failed");
+    }
+
+    function emergencyWithdraw() external onlyOwner isNotActive {
+        (bool success, ) = owner.call{value: address(this).balance}("");
+        require(success, "Transfer failed");
+    }
+
+
+    function stopContract() external onlyOwner {
+        isStopped = true;
+    }
+
+    function resumeContract() external onlyOwner {
+        isStopped = false;
+    }
+
     function purchaseCourse(
         bytes16 courseId,
         bytes32 proof
-    ) external payable 
+    ) external payable isActive
     {
         bytes32 courseHash = keccak256(abi.encodePacked(courseId, msg.sender));
         if (hasCourseOwnership(courseHash)) {
@@ -57,7 +92,7 @@ contract CourseMarketplace {
         });
     }
 
-    function repurchaseCourse(bytes32 courseHash) external payable {
+    function repurchaseCourse(bytes32 courseHash) external payable isActive {
         require(isCourseCreated(courseHash), "Course is not created");
         require(hasCourseOwnership(courseHash), "You are not a course owner");
         Course storage course = ownedCourses[courseHash];
@@ -67,14 +102,14 @@ contract CourseMarketplace {
         course.price = msg.value;
     }
 
-    function activateCourse(bytes32 courseHash) external onlyOwner {
+    function activateCourse(bytes32 courseHash) external onlyOwner isActive {
         require(isCourseCreated(courseHash), "Course is not created");
         Course storage course = ownedCourses[courseHash];
         require(course.state == State.Purchased, "Invalid state");
         course.state = State.Activated;
     }
 
-    function deactivateCourse(bytes32 courseHash) external onlyOwner {
+    function deactivateCourse(bytes32 courseHash) external onlyOwner isActive {
         require(isCourseCreated(courseHash), "Course is not created");
         Course storage course = ownedCourses[courseHash];
         require(course.state == State.Purchased, "Invalid state");
