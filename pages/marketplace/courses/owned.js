@@ -13,7 +13,6 @@ export default function OwnedCourses({courses}){
     const router = useRouter()
     const { account, network } = useWalletInfo()
     const { ownedCourses } = useOwnedCourses(courses, account.data, network.data)
-    console.log(ownedCourses)
     return (
         <>
             <div className="py-4">

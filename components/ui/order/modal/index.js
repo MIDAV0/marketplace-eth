@@ -12,7 +12,7 @@ const defaultOrder = {
 
 const _createFormState = (isDisabled=false, message="") => ({isDisabled, message})
 
-const createFormState = ({price, email, confirmationEmail}, hasAgreedTOS) => {
+const createFormState = ({price, email, confirmationEmail}, hasAgreedTOS, isNewPurchase) => {
   if (!price || Number(price)<=0){
     return _createFormState(true, "Price must be greater than 0")
   }
@@ -181,7 +181,7 @@ export default function OrderModal({ course, onClose, onSubmit, isNewPurchase })
             <Button
               disabled={formState.isDisabled}
               onClick={() => {
-                onSubmit(order)
+                onSubmit(order, course)
               }}
             >
               Submit

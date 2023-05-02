@@ -9,6 +9,8 @@ import { useWeb3 } from "@components/providers/web3";
 import { Message } from "@components/ui/common";
 import { normalizedOwnedCourse } from "@utils/normalize";
 import { useEffect } from "react";
+import { withToast } from "@utils/toast";
+
 
 const VerificationInput = ({onVerify}) => {
     const [email, setEmail] = useState("")
@@ -69,18 +71,20 @@ export default function ManageCourses(){
 
     const changeCourseState = async (courseHash, method) => {
         try {
-            await contract.methods[method](courseHash).send({from: account.data})
+            const result = await contract.methods[method](courseHash)
+            .send({from: account.data}) 
+            return result       
         } catch (error) {
-            console.error(error.message)
+            throw new Error(error.message)
         }
     }
 
     const activateCourse = async (courseHash) => {
-        changeCourseState(courseHash, "activateCourse")
+        withToast(changeCourseState(courseHash, "activateCourse"))
     }
 
     const deactivateCourse = async (courseHash) => {
-        changeCourseState(courseHash, "deactivateCourse")
+        withToast(changeCourseState(courseHash, "deactivateCourse"))
     }
 
     const searchCourse = async (courseHash) => {
