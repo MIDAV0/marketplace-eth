@@ -26,7 +26,7 @@ export default function OwnedCourses({courses}){
                     ) &&
                     <div>
                         <Message type="danger">
-                            <div>You don't have any courses yet.</div>
+                            <div>You don&apos;t have any courses yet.</div>
                             <Link href="/marketplace">
                                 <span className="font-normal hover:underline">
                                     <i>Purchase course</i>
